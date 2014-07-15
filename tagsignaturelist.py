@@ -20,17 +20,15 @@ class TagSignatureList:
 	    newts.tagtype = ts.find('TagType').text
 	    newts.nametag = ts.find('NameTag').text.split(',')
 	
-	    inlist = []
+	    newts.inputPorts = []
 	    for port in ts.findall('Inputs/Port'):  
                 port2add = tagsignature.Port(port.find('PortName').text.split(','), port.find('Type').text.split(','), port.find('Description').text.split(','))
-	        inlist.append(port2add)
-            newts.inputPorts = inlist 
+	        newts.inputPorts.append(port2add)
 	
-	    olist = []
+	    newts.outputPorts = []
 	    for port in ts.findall('Outputs/Port'):
 	         port2add = tagsignature.Port(port.find('PortName').text.split(','), port.find('Type').text.split(','), port.find('Description').text.split(','))
-	         olist.append(port2add) 
-            newts.outputPorts = olist	
+	         newts.outputPorts.append(port2add) 
 	    
 	    self.tagSignatureList[ts.attrib['tagid']] = newts  ###add new signature to the dictory, id is totid
 
@@ -42,24 +40,23 @@ class TagSignatureList:
 
 	    tagtype = SubElement(tss, 'TagType') 
 	    if (ts.tagtype):
-		tagtype.text = str(ts.tagtype)  
+		tagtype.text = str(ts.tagtype)
 	    nametag = SubElement(tss, 'NameTag')
 	    if (ts.nametag):
-		nametag.text = str(ts.nametag)   
-	
+		nametag.text = str(','.join(ts.nametag))   
 	    ### Inputs Ports
 	    inputs = SubElement(tss, 'Inputs')
 	    for port in ts.inputPorts: 
 		inputport = SubElement(inputs, 'Port') ###create a new Port 
 	        inputportname = SubElement(inputport, 'PortName')
 		if (port.PortName):
-		    inputportname.text = str(port.PortName)
+		    inputportname.text = str(','.join(port.PortName))
 	        inputporttype = SubElement(inputport, 'Type')
 		if (port.Type):
-		    inputporttype.text = str(port.Type)
+		    inputporttype.text = str(','.join(port.Type))
 	        inputportdes = SubElement(inputport, 'Description')
 		if (port.Description):
-		    inputportdes.text = str(port.Description) 
+		    inputportdes.text = str(','.join(port.Description))
 	
 	    ### Outputs Ports
 	    outputs = SubElement(tss, 'Outputs')
@@ -67,13 +64,13 @@ class TagSignatureList:
 	        outputport = SubElement(outputs, 'Port')  
 	        outputportname = SubElement(outputport, 'PortName')
 		if (port.PortName):
-		    outputportname.text = str(port.PortName) 
+		    outputportname.text = str(','.join(port.PortName)) 
 	        outputporttype = SubElement(outputport, 'Type')
 		if (port.Type):
-		    outputporttype.text = str(port.Type)
+		    outputporttype.text = str(','.join(port.Type))
 	        outputportdes = SubElement(outputport, 'Description')
 		if (port.Description):
-		    outputportdes.text = str(port.Description) 
+		    outputportdes.text = str(','.join(port.Description)) 
 	
 	###write into xml file
 	output_file = open(xmldir, 'w')
@@ -83,49 +80,48 @@ class TagSignatureList:
 
     """ read TagSignature-file.txt 
     NameTag | NameTag | Input PortName | Output PortName to a tagsignaturelist"""
+    def readTagSignatureFromLine(self, totid, line):
+        linelist = line.split('|')
+        tagsig = tagsignature.TagSignature()
+	if (len(linelist) != 4):
+	    return None
+    ### this is a tag line 
+	nametaglist = [] ### init before user
+	nametaglist.append(linelist[0])
+	nametaglist.append(linelist[1])
+        tagsig.nametag = nametaglist
+	
 
+	tagsig.outputPorts = []  ### init before use
+	for oport in linelist[2].split(): ### ports split with ' ' 
+	    newport = tagsignature.Port()
+	    newport.PortName = []  ### init before use
+	    for name in oport.split('_'): ### portname split with '_' 
+		newport.PortName.append(name)  ### port name 
+            tagsig.outputPorts.append(newport)
+
+        tagsig.inputPorts = []  ### init before use
+	for iport in linelist[3].split(): ### ports split with ' ' 
+	    newport = tagsignature.Port()
+	    newport.PortName = []  ### init before use
+	    for name in iport.split('_'): ### portname split with '_' 
+		newport.PortName.append(name)  ### port name 
+            tagsig.inputPorts.append(newport)
+
+	return tagsig
+    
     def readTagSignatureListFromFile(self, filedir):
         "parse all lines, store in list, and save to XML file"
         totid = 0
         with open(filedir) as f:
 	    for line in f:
 	        linetagsig = self.readTagSignatureFromLine(totid, line)
-		if (linetagsig != None):
+		if (linetagsig):
 		    self.tagSignatureList[totid] = linetagsig ### add key-value pair into dict
 		    totid += 1
 
 
         print "test if read is correct totid = " + str(totid)
-
 	self.saveTagSignatureListToXML('readfile.xml')
     
-
-    def readTagSignatureFromLine(self, totid, line):
-        linelist = line.split('|')
-        if (len(linelist) != 4):
-	    return None
-    ### this is a tag line 
-	tagsig = tagsignature.TagSignature()
-	tagsig.nametag.append(linelist[0])
-	tagsig.nametag.append(linelist[1])
-
-	inputportlist = linelist[2].split() ### find all Input Ports
-	for inputport in inputportlist:
-	    iport = tagsignature.Port()
-	    inputportname = inputport.split('_')
-	    for name in inputportname:
-		iport.PortName.append(name)
-	    tagsig.inputPorts.append(iport)
-
-	outputportlist = linelist[3].split() ### find all Input Ports
-	for outputport in outputportlist:
-	    oport = tagsignature.Port()
-	    outputportname = outputport.split('_')
-	    for name in outputportname:
-		oport.PortName.append(name)
-	    tagsig.outputPorts.append(oport)
-    
-	return tagsig
-
-
 
