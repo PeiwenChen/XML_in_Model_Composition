@@ -1,0 +1,31 @@
+ 16249]                             
+Sending Reboot Command to member1-re0   
+Shutdown NOW!                           
+[pid 16247]                             
+Waiting for standby RE's to boot        
+[Jul 14 09:10:26]:ISSU: LCC Backup REs Prepare Done
+Waiting for standby RE's to have the correct ISSU state
+Waiting for protocol backup to be ready to switch mastership
+Switching mastership on the protocol backup chassis to slot 0
+Waiting for protocol backup chassis master switch to complete
+Globally updating ISSU state            
+error: Timed out getting remote Master RE names
+Rebooting all virtual chassis members   
+   Lost communication with member0-re0  
+   Lost communication with member0-re1  
+Sending Reboot Command to member1-re0   
+                                        
+member1-re0:                            
+--------------------------------------------------------------------------
+Shutdown NOW!                           
+[pid 12574]                             
+
+peiwenc: devrt_mxvc_issu_fn is NULL
+peiwenc stack trace { 0xc106412b 0xc1061cbd 0xc149810a 0xc106773a 0xc1067a46 0xc1067bf6 0xc05fcfda 0xc05fda17 0xc073510f } 
+peiwenc no devrt:  jc_is_master_re = 0,  pfe_peer_master_vks[1] = 0
+Waiting (max 60 seconds) for system process `vnlru' to stop...done
+Waiting (max 60 seconds) for system process `bufdaemon' to stop...done
+Waiting (max 60 seconds) for system process `syncer' to stop...
+Syncing disks, vnodes remaining...0 0 0 done
+All buffers synced.
+Uptime: 46m48s
