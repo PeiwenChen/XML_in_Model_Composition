@@ -12,23 +12,32 @@ class ModelDescriptionList:
 	"list of ModelDescription"
 	def __init__(self, mdlist = {}):
 		self.modelDescriptionList = mdlist ### dict: {'1': signature1, '2':signature2}
-		self.totid = 0  
+		self.totid = 0 ## this is unique and monotonous increasing, we do not decrease it 
 	
-	#not test		
-	def findModelDescriptionId(self, modelDescription):
-		modelItem = modelDescription.model		
-		for (k,v) in  self.modelDescriptionList.items(): 
-			modelItem2 = v.model
-			#only check the model item, not all, could be changed
-			if(modelItem.name == modelItem2.name and modelItem.type == modelItem2.type and modelItem.description == modelItem2.description):
-				return k
-		return 0		
-	
-	#not test
-	def removeModelDescriptionByID(self, id):
-		if id in self.modelDescriptionList:
-			del self.modelDescriptionList[id]
-	
+	def addModelDescription(self, modeldes):
+	    " add modeldescription into the list"
+	    self.modelDescriptionList[self.totid] = modeldes
+	    totid += 1
+
+	def removeModelDescriptionByValue(self, modeldes):
+	    " remove modeldescription by value from the list "
+	    tmplist = {} 
+	    tmplist = {key: value for key, value in self.modelDescriptionList.items()
+		    if value != modeldes} ## how to compare? need re-visit!
+	    self.modelDescriptionList = templist
+
+	def removeModelDescriptionByID(self, k):
+	    "remove modeldescription by ID from the list"
+	    self.modelDescriptionList.pop(k, None)
+
+	def findModelDescriptionID(self, modeldes):
+	    " find the modeldes id(the key for dict) in the list"
+	    for key, value in self.modelDescriptionList.items():
+		# only check model item "
+		if(modeldes.model.name == value.name) &&(modeldes.model.itemtype == value.itemtype)):
+		    return k
+	    return 0 # not found	
+		
 	def loadModelDescriptionListFromXML(self, xmldir):	
 		document = ElementTree.parse(xmldir)
 		
@@ -145,13 +154,4 @@ class ModelDescriptionList:
 	    print "test if read is correct totid = " + str(totid)
 	    self.saveModelDescriptionListToXML('readfile_modes.xml')
 
-
-print "-------------I am doing test class ModelDescriptionList! ---------\n"
-modeslist = ModelDescriptionList()
-modeslist.loadModelDescriptionListFromXML('modelDescriptionList.in.xml')
-
-###modeslist.printModelDescriptionList()
-modeslist.saveModelDescriptionListToXML('modelDescriptionList.out.xml')
-
-modeslist.readModelDescriptionListFromFile('ModelDescription_file.txt')
 
