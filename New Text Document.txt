@@ -1,31 +1,152 @@
- 16249]                             
-Sending Reboot Command to member1-re0   
-Shutdown NOW!                           
-[pid 16247]                             
-Waiting for standby RE's to boot        
-[Jul 14 09:10:26]:ISSU: LCC Backup REs Prepare Done
-Waiting for standby RE's to have the correct ISSU state
-Waiting for protocol backup to be ready to switch mastership
-Switching mastership on the protocol backup chassis to slot 0
-Waiting for protocol backup chassis master switch to complete
-Globally updating ISSU state            
-error: Timed out getting remote Master RE names
-Rebooting all virtual chassis members   
-   Lost communication with member0-re0  
-   Lost communication with member0-re1  
-Sending Reboot Command to member1-re0   
-                                        
-member1-re0:                            
---------------------------------------------------------------------------
-Shutdown NOW!                           
-[pid 12574]                             
 
-peiwenc: devrt_mxvc_issu_fn is NULL
-peiwenc stack trace { 0xc106412b 0xc1061cbd 0xc149810a 0xc106773a 0xc1067a46 0xc1067bf6 0xc05fcfda 0xc05fda17 0xc073510f } 
-peiwenc no devrt:  jc_is_master_re = 0,  pfe_peer_master_vks[1] = 0
-Waiting (max 60 seconds) for system process `vnlru' to stop...done
-Waiting (max 60 seconds) for system process `bufdaemon' to stop...done
-Waiting (max 60 seconds) for system process `syncer' to stop...
-Syncing disks, vnodes remaining...0 0 0 done
-All buffers synced.
-Uptime: 46m48s
+
+
+
+
+
+[peiwenc@svl-junos-d058 /b/peiwenc/PR/1003567]$ grep "enoent" messages.master.beachbreak1 
+Jun 18 22:59:55  beachbreak1 /kernel: VKS0 unknown peer (idx 2 type 17 state 1 cmseq 0x0, cpseq 0x0, seq rx 0xb0018)restarting peer sending enoent
+Jun 18 22:59:55  beachbreak1 /kernel: VKS0 unknown peer (idx 1 type 17 state 1 cmseq 0x0, cpseq 0x0, seq rx 0xb0010)restarting peer sending enoent
+Jun 18 22:59:55  beachbreak1 /kernel: VKS0 unknown peer (idx 13 type 17 state 1 cmseq 0x0, cpseq 0x0, seq rx 0x505f4)restarting peer sending enoent
+Jun 19 10:03:45  beachbreak1 /kernel: VKS0 unknown peer (idx 2 type 17 state 1 cmseq 0x0, cpseq 0x0, seq rx 0x103ad)restarting peer sending enoent
+Jun 19 10:03:45  beachbreak1 /kernel: VKS0 unknown peer (idx 1 type 17 state 1 cmseq 0x0, cpseq 0x0, seq rx 0x10388)restarting peer sending enoent
+Jun 19 10:12:37  beachbreak1 /kernel: VKS0 unknown peer (idx 13 type 17 state 1 cmseq 0x0, cpseq 0x0, seq rx 0x10288)restarting peer sending enoent
+
+
+
+
+
+
+Events Sequence:
+********************************************************************
+on beachbreak1(master)
+
+
+Jun 19 10:01:52  beachbreak1 vccpd[1785]: VCCPD_PROTOCOL_ADJDOWN: Lost adjacency to 3c61.0442.3800 on vcp-1/0/2.32768, 
+
+Jun 19 10:01:53  beachbreak1 member1-fpc1 set_vcp_link_state: vcp-1/0/2 went down, total_vcp_cnt 1 
+
+Jun 19 10:03:40  beachbreak1 vccpd[1785]: interface vcp-1/0/2 came up
+
+Jun 19 10:03:41  beachbreak1 vccpd[1785]: interface vcp-1/0/3 went down
+
+Jun 19 10:03:50  beachbreak1 vccpd[1785]: interface vcp-1/0/2 went down
+
+VCP on both chassis up, then reach transitions to Bm and VC form 
+Jun 19 10:08:30  beachbreak1 vccpd[1785]: Member 1, interface vcp-1/0/2.32768 came up   
+Jun 19 10:08:30  beachbreak1 vccpd[1785]: Member 0, interface vcp-1/0/2.32768 came up
+Jun 19 10:08:30  beachbreak1 vccpd[1785]: Member 0, interface vcp-1/0/1.32768 came up
+
+
+Member 0 beachbreak
+Member 1 reefbreak
+
+VCP Link:
+member0-fpc 1/0/2     <<===>> member1- fpc 1/0/2
+
+
+@ 10:12:16  did GRES on beachbreak1, beachbreak1 transitions to Bm, reefbreak1 transitions to Mm 
+
+Jun 19 10:12:27  beachbreak1 vccpd[1785]: vccpd_platform_set_protocol_mode: old nmchassis mode = NMC_PROTO_MODE_MASTER, new mode = NMC_PROTO_MODE_BACKUP
+Jun 19 10:12:27  reefbreak1 vccpd[1785]: vccpd_platform_set_protocol_mode: old nmchassis mode = NMC_PROTO_MODE_BACKUP, new mode = NMC_PROTO_MODE_MASTER
+
+
+
+IPC Error on member0- FPC1, FPC2
+
+Jun 19 10:12:29  reefbreak1 member0-fpc1 PFEMAN: Couldn't write "Pfeman proxy message" msg to master pipe
+Jun 19 10:12:29  reefbreak1 init: link-management (PID 10160) sending signal hup: due to "proto-mastership": 0x1
+Jun 19 10:12:29  reefbreak1 member0-fpc1 PFEMAN: ipc error 6 in pfeman_queue_event
+Jun 19 10:12:29  reefbreak1 init: firewall (PID 10146) terminate signal sent
+Jun 19 10:12:29  reefbreak1 member0-fpc1 PFEMAN: ipc error 6 in pfeman_queue_event
+Jun 19 10:12:29  reefbreak1 member0-fpc2 PFEMAN: ipc error 6 in pfeman_queue_event
+Jun 19 10:12:29  reefbreak1 member0-fpc1 PFEMAN: ipc error 6 in pfeman_queue_event
+Jun 19 10:12:29  reefbreak1 member0-fpc2 PFEMAN: ipc error 6 in pfeman_queue_event
+Jun 19 10:12:29  reefbreak1 member0-fpc1 PFEMAN: ipc error 6 in pfeman_queue_event
+Jun 19 10:12:29  reefbreak1 init: internal-routing-service (PID 10141) terminate signal sent
+Jun 19 10:12:29  reefbreak1 member0-fpc2 PFEMAN: ipc error 6 in pfeman_queue_event
+Jun 19 10:12:29  reefbreak1 init: routing-socket-proxy (PID 10336) started
+Jun 19 10:12:29  reefbreak1 member0-fpc1 PFEMAN: ipc error 6 in pfeman_queue_event
+Jun 19 10:12:29  reefbreak1 init: neighbor-liveness (PID 10157) sending signal hup: due to "proto-mastership": 0x1
+Jun 19 10:12:29  reefbreak1 member0-fpc2 PFEMAN: ipc error 6 in pfeman_queue_event
+Jun 19 10:12:29  reefbreak1 member0-fpc1 PFEMAN: ipc error 6 in pfeman_queue_event
+Jun 19 10:12:29  reefbreak1 member0-fpc2 PFEMAN: ipc error 6 in pfeman_queue_event
+Jun 19 10:12:29  reefbreak1 member0-fpc1 PFEMAN: ipc error 6 in pfeman_queue_event
+Jun 19 10:12:29  reefbreak1 member0-fpc2 PFEMAN: ipc error 6 in pfeman_queue_event
+Jun 19 10:12:29  reefbreak1 member0-fpc1 PFEMAN: ipc error 6 in pfeman_queue_event
+Jun 19 10:12:29  reefbreak1 member0-fpc2 PFEMAN: ipc error 6 in pfeman_queue_event
+Jun 19 10:12:29  reefbreak1 member0-fpc1 PFEMAN: ipc error 6 in pfeman_queue_event
+Jun 19 10:12:29  reefbreak1 member0-fpc2 PFEMAN: ipc error 6 in pfeman_queue_event
+Jun 19 10:12:29  reefbreak1 member0-fpc1 PFEMAN: ipc error 6 in pfeman_queue_event
+Jun 19 10:12:29  reefbreak1 member0-fpc2 PFEMAN: ipc error 6 in pfeman_queue_event
+Jun 19 10:12:29  reefbreak1 member0-fpc1 PFEMAN: ipc error 6 in pfeman_queue_event
+Jun 19 10:12:29  reefbreak1 member0-fpc2 PFEMAN: ipc error 6 in pfeman_queue_event
+Jun 19 10:12:29  reefbreak1 member0-fpc1 PFEMAN: ipc error 6 in pfeman_queue_event
+Jun 19 10:12:29  reefbreak1 member0-fpc2 PFEMAN: ipc error 6 in pfeman_queue_event
+Jun 19 10:12:29  reefbreak1 member0-fpc1 PFEMAN: ipc error 6 in pfeman_queue_event
+Jun 19 10:12:29  reefbreak1 member0-fpc2 PFEMAN: ipc error 6 in pfeman_queue_event
+Jun 19 10:12:29  reefbreak1 member0-fpc1 PFEMAN: ipc error 6 in pfeman_queue_event
+Jun 19 10:12:29  reefbreak1 member0-fpc2 PFEMAN: ipc error 6 in pfeman_queue_event
+Jun 19 10:12:29  reefbreak1 member0-fpc2 PFEMAN: ipc error 6 in pfeman_queue_event
+Jun 19 10:12:29  reefbreak1 member0-fpc1 PFEMAN: ipc error 6 in pfeman_queue_event
+Jun 19 10:12:29  reefbreak1 member0-fpc1 PFEMAN: ipc error 6 in pfeman_queue_event
+Jun 19 10:12:29  reefbreak1 member0-fpc2 PFEMAN: ipc error 6 in pfeman_queue_event
+Jun 19 10:12:29  reefbreak1 member0-fpc1 PFEMAN: ipc error 6 in pfeman_queue_event
+
+
+
+then member1- VCP-1/0/2 down, then VC split
+
+Jun 19 10:12:34  beachbreak1 vccpd[1785]: VCCPD_PROTOCOL_ADJDOWN: Lost adjacency to 3c61.0442.3800 on vcp-1/0/2.32768,
+Jun 19 10:12:34  beachbreak1 vccpd[1785]: ifl vcp-1/0/2.32768 set down, ifl flags 0, flags 0
+Jun 19 10:12:34  beachbreak1 vccpd[1785]: interface vcp-1/0/2 went down
+Jun 19 10:12:34  beachbreak1 vccpd[1785]: Member 1, interface vcp-1/0/2.32768 went down
+
+
+Jun 19 10:13:33  reefbreak1 vccpd[1785]: VCCPD_PROTOCOL_ADJDOWN: Lost adjacency to 3c61.04b4.a800 on vcp-1/0/2.32768,
+
+
+
+But after 5 mins, VC forms again:
+
+Jun 19 10:17:16  reefbreak1 vccpd[1785]: Member 0, interface vcp-1/0/2.32768 came up
+Jun 19 10:17:16  reefbreak1 vccpd[1785]: Member 1, interface vcp-1/0/2.32768 came up
+Jun 19 10:17:16  reefbreak1 vccpd[1785]: vccpd_platform_set_protocol_mode: old nmchassis mode = NMC_PROTO_MODE_MASTER, new mode = NMC_PROTO_MODE_BACKUP
+
+
+
+
+peer vks0, idx 13 have sync errors
+
+Jun 19 10:12:30  reefbreak1 /kernel: pic_listener_connect: conn established: mgmt addr=0x11000082,
+Jun 19 10:12:30  reefbreak1 /kernel: if_pfe_peek_peer_info: peer_type 17, peer_index 13 peer_vksid 0
+Jun 19 10:12:30  reefbreak1 /kernel: peer->pfe_class = 0, pfe_type = 17
+Jun 19 10:12:30  reefbreak1 /kernel: , sync_update = 1
+Jun 19 10:12:30  reefbreak1 /kernel: RT_PFE: RT msg op 2 (PREFIX DELETE) failed, err 5 (Invalid)
+Jun 19 10:12:30  reefbreak1 /kernel: RT_PFE: RT msg op 2 (PREFIX DELETE) failed, err 5 (Invalid)
+Jun 19 10:12:30  reefbreak1 /kernel: RT_PFE: NH IPC op 11 (DELETE NEXTHOP) failed, err 7 (Doesn't Exist) peer_class 0, peer_index 13 peer_type 17
+Jun 19 10:12:30  reefbreak1 /kernel: RT_PFE: NH IPC op 11 (DELETE NEXTHOP) failed, err 7 (Doesn't Exist) peer_class 0, peer_index 13 peer_type 17
+
+
+Jun 19 10:12:34  reefbreak1 member0-fpc1 PFEMAN: Master socket closed
+
+Jun 19 10:12:34  reefbreak1 member0-fpc1 PFEMAN disconnected; PFEMAN socket closed abruptly
+
+
+
+VKS0 peer(member0-fpc 1/0/2) reconnect timeout
+
+Jun 19 10:13:28  reefbreak1 /kernel: pfe_listener_disconnect: conn dropped: listener idx=15, tnpaddr=0x11000081, reason: reconnect timeout  >?>>>>>>>>>>>>>timeout  
+
+
+And the peer became up until 10:17:08
+
+Jun 19 10:17:07  reefbreak1 member0-fpc1 PFEMAN: PRIVATE Resync
+Jun 19 10:17:07  reefbreak1 member0-fpc1 PFEMAN: NPC sent Resync request to Master
+Jun 19 10:17:09  reefbreak1 member0-fpc1 devrt_client_self_member_change_notify nmember 0 omember -1
+Jun 19 10:17:09  reefbreak1 member0-fpc1 PRIVATE PFEMAN: Session manager seq num now 0x130002 was 0
+Jun 19 10:17:09  reefbreak1 member0-fpc1 Recved PFE-rsync message
+
+
+
+
