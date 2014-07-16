@@ -12,7 +12,32 @@ class TagSignatureList:
     "list of TagSignature"
     def __init__(self, tslist = {}):
 	self.tagSignatureList = tslist ### dict: {'1': signature1, '2':signature2}
+	self.totid = 0
 
+    def addTagSignature(self, tagsi):
+    " add tagsignature into the list"
+    self.tagSignatureList[self.totid] = tagsi 
+    totid += 1
+
+    def removeTagSignatureByValue(self, tagsi):
+    " remove tagsignature by value from the list "
+    tmplist = {} 
+    tmplist = {key: value for key, value in self.modelDescriptionList.items()
+        if value != tagsi} ## how to compare? need re-visit!
+    self.tagSignatureList = templist
+
+    def removeTagSignatureByID(self, k):
+    "remove tagsignature by ID from the list"
+    self.tagSignatureList.pop(k, None)
+
+    def findTagSignatureByID(self, tagsi):
+    " find the tagsignature id(the key for dict) in the list"
+    for key, value in self.tagSignatureList.items():
+	# only check tagtype and nametag "
+	if(tagsi.tagtype == value.tagtype) &&(tagsi.nametag == value.nametag)):
+	    return k
+    return 0 # not found	
+		
     def loadTagSignatureListFromXML(self, xmldir):
 	tslistdoc = ElementTree.parse(xmldir)
 	for ts in tslistdoc.findall('TagSignature'):
